@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import ShirtCanvas from './ShirtCanvas';
 
-const words1 = ['YOUR', 'DESIGN.', 'YOUR', 'SHIRT.'];
+const words = ['YOUR', 'DESIGN.', 'YOUR', 'SHIRT.'];
 
 export default function Hero() {
   const headlineRef = useRef();
@@ -15,8 +15,8 @@ export default function Hero() {
       if (!spans) return;
       gsap.fromTo(
         spans,
-        { y: 50, opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.08, duration: 0.8, ease: 'power3.out', delay: 0.2 }
+        { y: 60, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.07, duration: 0.9, ease: 'power3.out', delay: 0.15 }
       );
     });
     return () => ctx.revert();
@@ -24,84 +24,88 @@ export default function Hero() {
 
   return (
     <section
-      className="relative min-h-screen flex items-center pt-[72px] overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #080B14 0%, #0F1629 60%, #080B14 100%)' }}
+      className="relative min-h-screen flex items-center pt-[68px] overflow-hidden"
+      style={{ background: '#FAFAF7' }}
     >
-      {/* Background gradient orbs */}
+      {/* Subtle warm orb */}
       <div
-        className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full pointer-events-none"
+        className="absolute pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)',
-          transform: 'translate(-50%, -50%)',
-        }}
-      />
-      <div
-        className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(167,139,250,0.07) 0%, transparent 70%)',
+          top: '20%',
+          right: '10%',
+          width: '500px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(201,169,110,0.09) 0%, transparent 70%)',
+          borderRadius: '50%',
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-12 items-center py-16">
+      <div className="max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-8 items-center py-16">
         {/* Left */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-7">
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-mono text-xs tracking-[0.25em] uppercase"
+            transition={{ duration: 0.5, delay: 0.1 }}
             style={{
               fontFamily: 'JetBrains Mono, monospace',
-              color: '#A78BFA',
+              fontSize: '10px',
+              letterSpacing: '0.28em',
+              color: '#C9A96E',
+              textTransform: 'uppercase',
             }}
           >
-            PREMIUM CUSTOM APPAREL · ZAMBIA
+            Premium Custom Apparel · Lusaka, Zambia
           </motion.p>
 
           <div ref={headlineRef}>
             <h1
-              className="font-display leading-[0.92] tracking-tight"
               style={{
                 fontFamily: 'Syne, sans-serif',
-                fontSize: 'clamp(52px, 7vw, 110px)',
+                fontSize: 'clamp(54px, 7.5vw, 116px)',
                 fontWeight: 800,
+                lineHeight: 0.9,
+                letterSpacing: '-0.03em',
+                color: '#0C0C0A',
               }}
             >
-              {words1.map((w, i) => (
+              {words.map((w, i) => (
                 <span
                   key={i}
-                  className="word inline-block mr-[0.2em]"
-                  style={{ color: '#EEF2FF' }}
+                  className="word inline-block mr-[0.18em]"
+                  style={{ opacity: 0 }}
                 >
                   {w}
                 </span>
               ))}
               <br />
-              <span
-                className="word inline-block gradient-text"
-                style={{ opacity: 0 }}
-              >
+              <span className="word inline-block gradient-text" style={{ opacity: 0 }}>
                 DELIVERED.
               </span>
             </h1>
           </div>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.7 }}
-            className="text-base leading-relaxed max-w-md"
-            style={{ color: 'rgba(238,242,255,0.7)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+            transition={{ duration: 0.6, delay: 0.75 }}
+            style={{
+              fontFamily: 'Plus Jakarta Sans, sans-serif',
+              fontSize: '15px',
+              lineHeight: 1.7,
+              color: 'rgba(12,12,10,0.5)',
+              maxWidth: '400px',
+            }}
           >
-            Upload your artwork or let us create it. Precision embroidery, screen
-            printing &amp; DTG — crafted and delivered across Zambia.
+            Upload your artwork or let us create it. Precision embroidery,
+            screen printing &amp; DTG — handcrafted in Lusaka, delivered across Zambia.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.9 }}
-            className="flex flex-wrap gap-4"
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="flex flex-wrap gap-3"
           >
             <Link to="/studio" className="btn-primary">
               Start Designing →
@@ -111,22 +115,25 @@ export default function Hero() {
             </a>
           </motion.div>
 
-          {/* Trust badges */}
+          {/* Badges */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 1.1 }}
-            className="flex flex-wrap gap-4 pt-2"
+            transition={{ duration: 0.6, delay: 1.1 }}
+            className="flex flex-wrap gap-2 pt-1"
           >
-            {['🇿🇲 Made in Zambia', '⚡ 5–7 Day Delivery', '💳 Mobile Money Accepted'].map(badge => (
+            {['🇿🇲 Made in Zambia', '⚡ 5–7 Day Delivery', '📱 Mobile Money Accepted'].map(badge => (
               <span
                 key={badge}
-                className="text-xs font-semibold px-3 py-1.5 rounded-full border"
                 style={{
-                  borderColor: 'rgba(99,102,241,0.3)',
-                  color: 'rgba(238,242,255,0.6)',
-                  background: 'rgba(99,102,241,0.08)',
                   fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '10.5px',
+                  letterSpacing: '0.03em',
+                  color: 'rgba(12,12,10,0.45)',
+                  background: '#F2EFE8',
+                  border: '1px solid #E5E0D5',
+                  borderRadius: '50px',
+                  padding: '6px 12px',
                 }}
               >
                 {badge}
@@ -135,24 +142,25 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Right — 3D Shirt */}
+        {/* Right — 3D shirt */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.7 }}
+          initial={{ opacity: 0, scale: 0.75 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
-          className="relative h-[520px] lg:h-[640px]"
+          transition={{ duration: 1.1, delay: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
+          className="relative h-[500px] lg:h-[620px]"
         >
-          {/* Glow behind shirt */}
+          {/* Soft shadow underneath */}
           <div
-            className="absolute inset-0 m-auto w-80 h-80 rounded-full pointer-events-none"
+            className="absolute bottom-8 left-1/2 pointer-events-none"
             style={{
-              background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
+              transform: 'translateX(-50%)',
+              width: '240px',
+              height: '40px',
+              background: 'radial-gradient(ellipse, rgba(12,12,10,0.12) 0%, transparent 75%)',
+              borderRadius: '50%',
             }}
           />
-          <ShirtCanvas color="#FFFFFF" showParticles autoRotate />
+          <ShirtCanvas color="#1A1A1A" showParticles />
         </motion.div>
       </div>
 
@@ -160,18 +168,22 @@ export default function Hero() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
+        transition={{ delay: 1.6 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
         <span
-          className="font-mono text-[10px] tracking-widest"
-          style={{ color: 'rgba(167,139,250,0.5)', fontFamily: 'JetBrains Mono, monospace' }}
+          style={{
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: '9px',
+            letterSpacing: '0.25em',
+            color: 'rgba(12,12,10,0.3)',
+          }}
         >
           SCROLL
         </span>
         <div
-          className="w-[1px] h-12 mx-auto"
-          style={{ background: 'linear-gradient(to bottom, rgba(99,102,241,0.6), transparent)' }}
+          className="w-[1px] h-10"
+          style={{ background: 'linear-gradient(to bottom, rgba(12,12,10,0.3), transparent)' }}
         />
       </motion.div>
     </section>

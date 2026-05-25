@@ -1,97 +1,76 @@
 import { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Environment, MeshDistortMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Procedural shirt geometry built from primitives
-function ShirtMesh({ color = '#FFFFFF', decalTexture = null, roughness = 0.88 }) {
-  const groupRef = useRef();
+function createShirtGeometry() {
+  const shape = new THREE.Shape();
+  shape.moveTo(-0.64, -1.02);
+  shape.lineTo(0.64, -1.02);
+  shape.bezierCurveTo(0.66, -0.4, 0.67, 0.1, 0.64, 0.3);
+  shape.lineTo(0.92, 0.40);
+  shape.bezierCurveTo(1.14, 0.48, 1.30, 0.40, 1.34, 0.24);
+  shape.bezierCurveTo(1.32, 0.10, 1.20, 0.02, 1.06, 0.04);
+  shape.bezierCurveTo(0.94, 0.06, 0.82, 0.13, 0.75, 0.26);
+  shape.lineTo(0.75, 0.52);
+  shape.bezierCurveTo(0.73, 0.70, 0.44, 0.85, 0.0, 0.87);
+  shape.bezierCurveTo(-0.44, 0.85, -0.73, 0.70, -0.75, 0.52);
+  shape.lineTo(-0.75, 0.26);
+  shape.bezierCurveTo(-0.82, 0.13, -0.94, 0.06, -1.06, 0.04);
+  shape.bezierCurveTo(-1.20, 0.02, -1.32, 0.10, -1.34, 0.24);
+  shape.bezierCurveTo(-1.30, 0.40, -1.14, 0.48, -0.92, 0.40);
+  shape.lineTo(-0.64, 0.3);
+  shape.bezierCurveTo(-0.67, 0.1, -0.66, -0.4, -0.64, -1.02);
+
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    steps: 1,
+    depth: 0.09,
+    bevelEnabled: true,
+    bevelThickness: 0.022,
+    bevelSize: 0.014,
+    bevelSegments: 4,
+  });
+
+  geo.computeBoundingBox();
+  const c = new THREE.Vector3();
+  geo.boundingBox.getCenter(c);
+  geo.translate(-c.x, -c.y, -c.z);
+  return geo;
+}
+
+function ShirtMesh({ color = '#1A1A1A', roughness = 0.82 }) {
+  const meshRef = useRef();
+  const geometry = useMemo(() => createShirtGeometry(), []);
 
   useFrame((_, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.3;
+    if (meshRef.current) {
+      meshRef.current.rotation.y += delta * 0.3;
     }
   });
 
-  const shirtColor = new THREE.Color(color);
-
-  const material = useMemo(() => new THREE.MeshStandardMaterial({
-    color: shirtColor,
-    roughness: roughness,
-    metalness: 0.02,
-  }), [color, roughness]);
-
   return (
-    <group ref={groupRef} scale={[1.2, 1.2, 1.2]} position={[0, -0.2, 0]}>
-      {/* Body */}
-      <mesh material={material} castShadow receiveShadow>
-        <boxGeometry args={[1.6, 2.0, 0.18, 8, 12, 4]} />
-      </mesh>
-
-      {/* Left Sleeve */}
-      <mesh
-        material={material}
-        position={[-1.05, 0.55, 0]}
-        rotation={[0, 0, -Math.PI / 6]}
-        castShadow
-      >
-        <cylinderGeometry args={[0.28, 0.32, 0.9, 12]} />
-      </mesh>
-
-      {/* Right Sleeve */}
-      <mesh
-        material={material}
-        position={[1.05, 0.55, 0]}
-        rotation={[0, 0, Math.PI / 6]}
-        castShadow
-      >
-        <cylinderGeometry args={[0.28, 0.32, 0.9, 12]} />
-      </mesh>
-
-      {/* Collar */}
-      <mesh material={material} position={[0, 1.08, 0]} castShadow>
-        <torusGeometry args={[0.3, 0.08, 8, 24, Math.PI * 2]} />
-      </mesh>
-
-      {/* Shoulder seam L */}
-      <mesh
-        material={new THREE.MeshStandardMaterial({ color: new THREE.Color(color).multiplyScalar(0.85), roughness: 0.9 })}
-        position={[-0.65, 0.88, 0.09]}
-        rotation={[0, 0, -0.22]}
-      >
-        <boxGeometry args={[0.6, 0.04, 0.04]} />
-      </mesh>
-
-      {/* Shoulder seam R */}
-      <mesh
-        material={new THREE.MeshStandardMaterial({ color: new THREE.Color(color).multiplyScalar(0.85), roughness: 0.9 })}
-        position={[0.65, 0.88, 0.09]}
-        rotation={[0, 0, 0.22]}
-      >
-        <boxGeometry args={[0.6, 0.04, 0.04]} />
-      </mesh>
-
-      {/* Shadow catcher */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.1, 0]} receiveShadow>
-        <planeGeometry args={[4, 4]} />
-        <shadowMaterial opacity={0.3} />
-      </mesh>
-    </group>
+    <mesh ref={meshRef} geometry={geometry} scale={[1.35, 1.35, 1.35]} castShadow receiveShadow>
+      <meshStandardMaterial
+        color={color}
+        roughness={roughness}
+        metalness={0.04}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
   );
 }
 
-function Particles({ count = 300 }) {
-  const points = useMemo(() => {
-    const positions = new Float32Array(count * 3);
+function Particles({ count = 180 }) {
+  const ref = useRef();
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 10;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      pos[i * 3]     = (Math.random() - 0.5) * 10;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 10;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 10;
     }
-    return positions;
+    return pos;
   }, [count]);
 
-  const ref = useRef();
   useFrame((_, delta) => {
     if (ref.current) {
       ref.current.rotation.y += delta * 0.02;
@@ -102,54 +81,44 @@ function Particles({ count = 300 }) {
   return (
     <points ref={ref}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[points, 3]}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial
-        size={0.018}
-        color="#A78BFA"
-        transparent
-        opacity={0.6}
-        sizeAttenuation
-      />
+      <pointsMaterial size={0.016} color="#C9A96E" transparent opacity={0.35} sizeAttenuation />
     </points>
   );
 }
 
-export default function ShirtCanvas({ color = '#FFFFFF', showParticles = true, autoRotate = true, decal = null }) {
+function ShadowPlane() {
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.6, 0]} receiveShadow>
+      <planeGeometry args={[8, 8]} />
+      <shadowMaterial opacity={0.1} />
+    </mesh>
+  );
+}
+
+export default function ShirtCanvas({ color = '#1A1A1A', showParticles = true }) {
   return (
     <Canvas
       shadows
-      camera={{ position: [0, 0, 5], fov: 45 }}
+      camera={{ position: [0, 0, 4.8], fov: 46 }}
       style={{ background: 'transparent' }}
       gl={{ alpha: true, antialias: true }}
     >
-      {/* Lighting */}
-      <ambientLight intensity={0.6} color="#C4B5FD" />
+      <ambientLight intensity={1.4} color="#FAFAF7" />
       <directionalLight
-        position={[-3, 4, 2]}
-        intensity={1.8}
-        color="#3B82F6"
+        position={[-2, 4, 3]}
+        intensity={1.6}
+        color="#FFFFFF"
         castShadow
         shadow-mapSize={[1024, 1024]}
       />
-      <pointLight position={[3, -2, 2]} intensity={0.8} color="#A78BFA" />
-      <pointLight position={[0, 5, 3]} intensity={0.5} color="#EEF2FF" />
+      <pointLight position={[3, -2, 2]} intensity={0.7} color="#C9A96E" />
+      <pointLight position={[0, 2, -3]} intensity={0.4} color="#F5F0E8" />
 
       {showParticles && <Particles />}
-
-      <ShirtMesh color={color} decalTexture={decal} />
-
-      {!autoRotate && (
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          minPolarAngle={Math.PI / 4}
-          maxPolarAngle={Math.PI * 0.7}
-        />
-      )}
+      <ShirtMesh color={color} />
+      <ShadowPlane />
     </Canvas>
   );
 }

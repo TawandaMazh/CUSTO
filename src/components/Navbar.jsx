@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavScroll } from '../hooks/useScrollProgress';
 
 const links = [
-  { label: 'Home', to: '/' },
   { label: 'How It Works', to: '/#how-it-works' },
-  { label: 'Products', to: '/#techniques' },
+  { label: 'Techniques', to: '/#techniques' },
   { label: 'Gallery', to: '/gallery' },
   { label: 'Pricing', to: '/pricing' },
-  { label: 'Design Studio', to: '/studio' },
+  { label: 'About', to: '/about' },
 ];
 
 export default function Navbar() {
-  const scrolled = useNavScroll();
+  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 32);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => setMobileOpen(false), [location]);
 
@@ -23,69 +27,94 @@ export default function Navbar() {
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-400"
       style={{
-        background: scrolled
-          ? 'rgba(8, 11, 20, 0.85)'
-          : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(99, 102, 241, 0.1)' : 'none',
+        background: scrolled ? 'rgba(250,250,247,0.94)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(16px)' : 'none',
+        borderBottom: scrolled ? '1px solid #E5E0D5' : 'none',
       }}
     >
-      <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 h-[68px] flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 no-underline">
+        <Link to="/" className="no-underline flex items-center gap-2.5">
           <span
-            className="font-display font-extrabold text-2xl gradient-text tracking-tight"
-            style={{ fontFamily: 'Syne, sans-serif' }}
+            style={{
+              fontFamily: 'Syne, sans-serif',
+              fontWeight: 800,
+              fontSize: '22px',
+              color: '#0C0C0A',
+              letterSpacing: '-0.02em',
+            }}
           >
             CUSTO
           </span>
           <span
-            className="font-mono text-[10px] opacity-50 text-[#A78BFA]"
-            style={{ fontFamily: 'JetBrains Mono, monospace' }}
+            style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '9px',
+              color: '#C9A96E',
+              letterSpacing: '0.18em',
+              opacity: 0.8,
+            }}
           >
-            🇿🇲 LUSAKA
+            ZM
           </span>
         </Link>
 
-        {/* Desktop Nav */}
+        {/* Desktop links */}
         <div className="hidden md:flex items-center gap-8">
           {links.map(link => (
-            <NavLink key={link.to} link={link} active={location.pathname === link.to} />
+            <Link
+              key={link.to}
+              to={link.to}
+              className="no-underline transition-colors duration-200"
+              style={{
+                fontFamily: 'Plus Jakarta Sans, sans-serif',
+                fontWeight: 500,
+                fontSize: '13.5px',
+                letterSpacing: '0.01em',
+                color: location.pathname === link.to ? '#0C0C0A' : 'rgba(12,12,10,0.5)',
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = '#0C0C0A'}
+              onMouseLeave={e => e.currentTarget.style.color = location.pathname === link.to ? '#0C0C0A' : 'rgba(12,12,10,0.5)'}
+            >
+              {link.label}
+            </Link>
           ))}
         </div>
 
         {/* CTA */}
-        <div className="hidden md:flex items-center gap-3">
-          <Link to="/studio" className="btn-primary text-sm py-3 px-6">
+        <div className="hidden md:flex">
+          <Link to="/studio" className="btn-primary" style={{ fontSize: '13px', padding: '10px 24px' }}>
             Start Creating
           </Link>
         </div>
 
         {/* Hamburger */}
         <button
-          className="md:hidden flex flex-col gap-[5px] p-2 cursor-pointer"
+          className="md:hidden flex flex-col gap-[5px] p-2"
           onClick={() => setMobileOpen(v => !v)}
           aria-label="Toggle menu"
+          style={{ cursor: 'pointer', background: 'none', border: 'none' }}
         >
           {[0, 1, 2].map(i => (
             <motion.span
               key={i}
-              className="block w-6 h-[2px] bg-[#EEF2FF]"
+              className="block w-5 h-[1.5px]"
+              style={{ background: '#0C0C0A' }}
               animate={{
                 rotate: mobileOpen ? (i === 0 ? 45 : i === 2 ? -45 : 0) : 0,
-                y: mobileOpen ? (i === 0 ? 7 : i === 2 ? -7 : 0) : 0,
+                y: mobileOpen ? (i === 0 ? 6.5 : i === 2 ? -6.5 : 0) : 0,
                 opacity: mobileOpen && i === 1 ? 0 : 1,
               }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.2 }}
             />
           ))}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -93,20 +122,26 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden overflow-hidden"
-            style={{ background: 'rgba(8,11,20,0.96)', backdropFilter: 'blur(20px)' }}
+            style={{ background: 'rgba(250,250,247,0.98)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #E5E0D5' }}
           >
             <div className="px-6 py-6 flex flex-col gap-4">
               {links.map((link, i) => (
                 <motion.div
                   key={link.to}
-                  initial={{ x: -20, opacity: 0 }}
+                  initial={{ x: -16, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: i * 0.05 }}
                 >
                   <Link
                     to={link.to}
-                    className="block text-[#EEF2FF] font-semibold text-lg py-2 border-b border-[rgba(99,102,241,0.1)] no-underline hover:text-[#A78BFA] transition-colors"
-                    style={{ fontFamily: 'Syne, sans-serif' }}
+                    className="block py-2 no-underline"
+                    style={{
+                      fontFamily: 'Syne, sans-serif',
+                      fontWeight: 700,
+                      fontSize: '18px',
+                      color: '#0C0C0A',
+                      borderBottom: '1px solid #E5E0D5',
+                    }}
                   >
                     {link.label}
                   </Link>
@@ -120,30 +155,5 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </motion.nav>
-  );
-}
-
-function NavLink({ link, active }) {
-  return (
-    <Link
-      to={link.to}
-      className="relative font-semibold text-sm no-underline group"
-      style={{
-        color: active ? '#A78BFA' : '#EEF2FF',
-        fontFamily: 'Plus Jakarta Sans, sans-serif',
-      }}
-    >
-      {link.label}
-      <span
-        className="absolute bottom-[-4px] left-0 h-[2px] rounded-full transition-all duration-300"
-        style={{
-          background: 'linear-gradient(90deg, #3B82F6, #A78BFA)',
-          width: active ? '100%' : '0%',
-        }}
-      />
-      <style>{`
-        .group:hover span { width: 100% !important; }
-      `}</style>
-    </Link>
   );
 }

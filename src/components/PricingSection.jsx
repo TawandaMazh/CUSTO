@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { quantityTiers, paymentMethods, garmentMultipliers, printMethods } from '../data/pricing';
+import { motion, useInView } from 'framer-motion';
+import { quantityTiers, paymentMethods, garmentMultipliers } from '../data/pricing';
 
 const garmentOptions = [
   { id: 'tshirt', label: 'T-Shirt', mult: 1 },
   { id: 'hoodie', label: 'Hoodie', mult: 1.4 },
-  { id: 'polo', label: 'Polo', mult: 1.2 },
+  { id: 'polo',   label: 'Polo',   mult: 1.2 },
 ];
 
 const basePrice = 95;
@@ -14,7 +14,6 @@ export default function PricingSection() {
   const ref = useRef();
   const inView = useInView(ref, { once: true, margin: '-80px' });
   const [garment, setGarment] = useState('tshirt');
-
   const mult = garmentMultipliers[garment] ?? 1;
 
   return (
@@ -22,28 +21,40 @@ export default function PricingSection() {
       id="pricing"
       ref={ref}
       className="py-32 px-6"
-      style={{ background: '#080B14' }}
+      style={{ background: '#F2EFE8' }}
     >
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.6 }}
+          className="mb-16"
         >
           <p
-            className="font-mono text-xs tracking-[0.25em] uppercase mb-4"
-            style={{ color: '#A78BFA', fontFamily: 'JetBrains Mono, monospace' }}
+            style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '10px',
+              letterSpacing: '0.28em',
+              color: '#C9A96E',
+              textTransform: 'uppercase',
+              marginBottom: '14px',
+            }}
           >
-            TRANSPARENT PRICING · ZAMBIAN KWACHA
+            Transparent Pricing · Zambian Kwacha
           </p>
           <h2
-            className="font-display font-bold mb-4"
-            style={{ fontFamily: 'Syne, sans-serif', fontSize: 'clamp(36px, 5vw, 72px)', color: '#EEF2FF', lineHeight: 1 }}
+            style={{
+              fontFamily: 'Syne, sans-serif',
+              fontWeight: 800,
+              fontSize: 'clamp(40px, 5.5vw, 80px)',
+              color: '#0C0C0A',
+              lineHeight: 0.92,
+              letterSpacing: '-0.03em',
+            }}
           >
-            Premium Quality.<br />
-            <span className="gradient-text">Local Prices.</span>
+            PREMIUM QUALITY.<br />
+            <span className="gradient-text">LOCAL PRICES.</span>
           </h2>
         </motion.div>
 
@@ -51,25 +62,29 @@ export default function PricingSection() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.3 }}
-          className="flex justify-center gap-3 mb-12"
+          transition={{ delay: 0.2 }}
+          className="flex gap-2 mb-12"
         >
           {garmentOptions.map(g => (
             <button
               key={g.id}
               onClick={() => setGarment(g.id)}
-              className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer"
               style={{
-                background: garment === g.id ? 'linear-gradient(135deg, #3B82F6, #A78BFA)' : 'rgba(99,102,241,0.1)',
-                color: garment === g.id ? 'white' : 'rgba(238,242,255,0.6)',
-                border: garment === g.id ? 'none' : '1px solid rgba(99,102,241,0.2)',
-                boxShadow: garment === g.id ? '0 0 20px rgba(99,102,241,0.4)' : 'none',
                 fontFamily: 'Plus Jakarta Sans, sans-serif',
+                fontWeight: 600,
+                fontSize: '13px',
+                padding: '9px 22px',
+                borderRadius: '50px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                background: garment === g.id ? '#0C0C0A' : '#FFFFFF',
+                color: garment === g.id ? '#FAFAF7' : 'rgba(12,12,10,0.5)',
+                border: garment === g.id ? '1.5px solid #0C0C0A' : '1.5px solid #E5E0D5',
               }}
             >
               {g.label}
               {g.mult > 1 && (
-                <span className="ml-1.5 text-xs opacity-70">
+                <span style={{ marginLeft: '6px', fontSize: '11px', opacity: 0.6 }}>
                   +{Math.round((g.mult - 1) * 100)}%
                 </span>
               )}
@@ -78,29 +93,40 @@ export default function PricingSection() {
         </motion.div>
 
         {/* Pricing tiers */}
-        <div className="grid md:grid-cols-4 gap-4 mb-16">
+        <div className="grid md:grid-cols-4 gap-4 mb-14">
           {quantityTiers.map((tier, i) => {
             const price = Math.round(basePrice * mult * (1 - tier.discount));
             const isPopular = tier.badge === 'MOST POPULAR';
             return (
               <motion.div
                 key={tier.label}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 32 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.1 * i + 0.4 }}
-                className="relative card-dark p-6 flex flex-col"
+                transition={{ delay: 0.1 * i + 0.3 }}
+                className="relative flex flex-col"
                 style={{
-                  border: isPopular ? '2px solid #3B82F6' : '1px solid rgba(99,102,241,0.15)',
-                  boxShadow: isPopular ? '0 0 40px rgba(59,130,246,0.2)' : 'none',
+                  background: isPopular ? '#0C0C0A' : '#FFFFFF',
+                  border: isPopular ? '1.5px solid #0C0C0A' : '1.5px solid #E5E0D5',
+                  borderRadius: '16px',
+                  padding: '28px 24px',
                 }}
               >
                 {tier.badge && (
                   <div
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap"
                     style={{
-                      background: isPopular ? 'linear-gradient(90deg, #3B82F6, #A78BFA)' : 'rgba(167,139,250,0.2)',
-                      color: 'white',
+                      position: 'absolute',
+                      top: '-13px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      padding: '4px 14px',
+                      borderRadius: '50px',
+                      background: isPopular ? '#C9A96E' : '#F2EFE8',
+                      color: isPopular ? '#0C0C0A' : '#A07840',
                       fontFamily: 'JetBrains Mono, monospace',
+                      fontSize: '9.5px',
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     {tier.badge}
@@ -108,58 +134,92 @@ export default function PricingSection() {
                 )}
 
                 <p
-                  className="font-mono text-xs tracking-wider mb-2"
-                  style={{ color: '#6366F1', fontFamily: 'JetBrains Mono, monospace' }}
+                  style={{
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: '9px',
+                    letterSpacing: '0.16em',
+                    color: isPopular ? 'rgba(250,250,247,0.45)' : '#C9A96E',
+                    textTransform: 'uppercase',
+                    marginBottom: '8px',
+                  }}
                 >
                   {tier.min === 100 ? '100+ units' : `${tier.min}–${tier.max} units`}
                 </p>
+
                 <h3
-                  className="font-display font-bold text-lg mb-4"
-                  style={{ fontFamily: 'Syne, sans-serif', color: '#EEF2FF' }}
+                  style={{
+                    fontFamily: 'Syne, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '16px',
+                    color: isPopular ? '#FAFAF7' : '#0C0C0A',
+                    marginBottom: '18px',
+                  }}
                 >
                   {tier.label}
                 </h3>
 
-                <div className="flex-1">
+                <div style={{ flex: 1 }}>
                   <div
-                    className="font-display font-black mb-1"
-                    style={{ fontFamily: 'Syne, sans-serif', fontSize: '42px', color: '#EEF2FF', lineHeight: 1 }}
+                    style={{
+                      fontFamily: 'Syne, sans-serif',
+                      fontWeight: 800,
+                      fontSize: '40px',
+                      lineHeight: 1,
+                      marginBottom: '4px',
+                      color: isPopular ? '#C9A96E' : '#0C0C0A',
+                    }}
                   >
                     {tier.min === 100 ? (
-                      <span className="gradient-text text-2xl">Custom</span>
+                      <span style={{ fontSize: '24px' }}>Custom</span>
                     ) : (
                       <>
-                        <span className="gradient-text">K{price}</span>
-                        <span className="text-base font-normal opacity-50">/unit</span>
+                        K{price}
+                        <span style={{ fontSize: '14px', fontWeight: 400, opacity: 0.4, marginLeft: '2px' }}>/unit</span>
                       </>
                     )}
                   </div>
 
                   {tier.discount > 0 && (
-                    <p className="text-xs mb-4" style={{ color: '#A78BFA', fontFamily: 'JetBrains Mono, monospace' }}>
-                      Save {Math.round(tier.discount * 100)}% vs single
+                    <p
+                      style={{
+                        fontFamily: 'JetBrains Mono, monospace',
+                        fontSize: '10px',
+                        color: isPopular ? '#C9A96E' : '#A07840',
+                        marginBottom: '14px',
+                      }}
+                    >
+                      Save {Math.round(tier.discount * 100)}%
                     </p>
                   )}
 
                   <div
-                    className="text-xs py-2 px-3 rounded-lg mb-3"
                     style={{
-                      background: tier.delivery === 0 ? 'rgba(59,130,246,0.1)' : 'rgba(99,102,241,0.08)',
-                      color: tier.delivery === 0 ? '#93C5FD' : 'rgba(238,242,255,0.5)',
+                      fontSize: '11px',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      marginBottom: '16px',
                       fontFamily: 'JetBrains Mono, monospace',
+                      background: isPopular ? 'rgba(250,250,247,0.06)' : '#F2EFE8',
+                      color: isPopular ? 'rgba(250,250,247,0.5)' : 'rgba(12,12,10,0.45)',
                     }}
                   >
-                    {tier.delivery === 0 ? '🚀 FREE Delivery' : `K${tier.delivery} delivery`}
+                    {tier.delivery === 0 ? '✦ Free Delivery' : `K${tier.delivery} delivery`}
                   </div>
                 </div>
 
                 <button
-                  className="w-full py-3 rounded-xl text-sm font-semibold transition-all duration-300 cursor-pointer"
                   style={{
-                    background: isPopular ? 'linear-gradient(135deg, #3B82F6, #A78BFA)' : 'rgba(99,102,241,0.12)',
-                    color: 'white',
-                    border: isPopular ? 'none' : '1px solid rgba(99,102,241,0.25)',
+                    width: '100%',
+                    padding: '11px',
+                    borderRadius: '10px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
                     fontFamily: 'Plus Jakarta Sans, sans-serif',
+                    transition: 'all 0.2s',
+                    background: isPopular ? '#C9A96E' : '#0C0C0A',
+                    color: '#FAFAF7',
+                    border: 'none',
                   }}
                 >
                   {tier.min === 100 ? 'Get a Quote' : 'Order Now'}
@@ -170,52 +230,75 @@ export default function PricingSection() {
         </div>
 
         <p
-          className="text-center text-xs mb-24"
-          style={{ color: 'rgba(238,242,255,0.4)', fontFamily: 'JetBrains Mono, monospace' }}
+          style={{
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: '10px',
+            color: 'rgba(12,12,10,0.35)',
+            marginBottom: '64px',
+            letterSpacing: '0.04em',
+          }}
         >
           All prices in Zambian Kwacha (ZMW). VAT inclusive. Prices may vary based on design complexity.
         </p>
 
         {/* Payment methods */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.7 }}
         >
-          <div className="text-center mb-12">
-            <p
-              className="font-mono text-xs tracking-[0.25em] uppercase mb-4"
-              style={{ color: '#A78BFA', fontFamily: 'JetBrains Mono, monospace' }}
-            >
-              FLEXIBLE PAYMENT OPTIONS
-            </p>
-            <h3
-              className="font-display font-bold text-3xl"
-              style={{ fontFamily: 'Syne, sans-serif', color: '#EEF2FF' }}
-            >
-              Pay Your Way
-            </h3>
-          </div>
+          <p
+            style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '10px',
+              letterSpacing: '0.28em',
+              color: '#C9A96E',
+              textTransform: 'uppercase',
+              marginBottom: '12px',
+            }}
+          >
+            Payment Options
+          </p>
+          <h3
+            style={{
+              fontFamily: 'Syne, sans-serif',
+              fontWeight: 700,
+              fontSize: '28px',
+              color: '#0C0C0A',
+              marginBottom: '28px',
+            }}
+          >
+            Pay Your Way
+          </h3>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             {paymentMethods.map((pm, i) => (
               <motion.div
                 key={pm.id}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.96 }}
                 animate={inView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: 0.9 + i * 0.07 }}
-                className="card-dark p-5 group cursor-default"
+                transition={{ delay: 0.8 + i * 0.07 }}
+                className="card-clean p-5"
               >
-                <div className="text-3xl mb-3">{pm.icon}</div>
+                <div style={{ fontSize: '28px', marginBottom: '10px' }}>{pm.icon}</div>
                 <p
-                  className="font-display font-bold text-base mb-2"
-                  style={{ fontFamily: 'Syne, sans-serif', color: '#EEF2FF' }}
+                  style={{
+                    fontFamily: 'Syne, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '15px',
+                    color: '#0C0C0A',
+                    marginBottom: '6px',
+                  }}
                 >
                   {pm.name}
                 </p>
                 <p
-                  className="text-xs leading-relaxed"
-                  style={{ color: 'rgba(238,242,255,0.5)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                  style={{
+                    fontFamily: 'Plus Jakarta Sans, sans-serif',
+                    fontSize: '12px',
+                    lineHeight: 1.6,
+                    color: 'rgba(12,12,10,0.45)',
+                  }}
                 >
                   {pm.desc}
                 </p>
@@ -224,17 +307,21 @@ export default function PricingSection() {
           </div>
 
           <div
-            className="text-center py-4 px-6 rounded-xl"
             style={{
-              background: 'rgba(167,139,250,0.08)',
-              border: '1px solid rgba(167,139,250,0.2)',
+              padding: '14px 20px',
+              borderRadius: '12px',
+              background: '#FFFFFF',
+              border: '1px solid #E5E0D5',
             }}
           >
             <p
-              className="text-sm"
-              style={{ color: '#C4B5FD', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+              style={{
+                fontFamily: 'Plus Jakarta Sans, sans-serif',
+                fontSize: '13px',
+                color: 'rgba(12,12,10,0.5)',
+              }}
             >
-              💜 Invoices provided for all orders. Business Purchase Orders (LPOs) accepted for corporate &amp; government clients.
+              Invoices provided for all orders. Business Purchase Orders (LPOs) accepted for corporate &amp; government clients.
             </p>
           </div>
         </motion.div>

@@ -1,5 +1,6 @@
-import { useRef, useEffect, useState, Suspense } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useRef, useEffect, useState, Suspense, useMemo } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Link } from 'react-router-dom';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -8,186 +9,125 @@ gsap.registerPlugin(ScrollTrigger);
 
 const phases = [
   {
-    id: 0,
-    range: [0, 0.18],
-    num: '01',
-    label: 'BLANK CANVAS',
+    id: 0, range: [0, 0.18], num: '01', label: 'BLANK CANVAS',
     heading: 'It starts with your idea',
     body: 'Choose your garment. Pick the colour. Tell us your vision — or upload your artwork directly.',
-    color: '#FFFFFF',
-    side: 'left',
-    lightIntensity: 0.6,
+    color: '#1A1A1A', side: 'left', lightIntensity: 0.9,
   },
   {
-    id: 1,
-    range: [0.18, 0.36],
-    num: '02',
-    label: 'SCREEN PRINTING',
+    id: 1, range: [0.18, 0.36], num: '02', label: 'SCREEN PRINTING',
     heading: 'Bold. Vivid. Built to last.',
     body: 'Razor-sharp graphics with professional inks that bond deep into the fabric. Perfect for logos, illustrations, and high-impact designs.',
     chips: ['Up to 8 colours', 'Bulk friendly', 'From K95/unit'],
-    color: '#FFFFFF',
-    side: 'right',
-    lightIntensity: 0.9,
-    decalColor: '#3B82F6',
+    color: '#0C0C0A', side: 'right', lightIntensity: 1.1, decalColor: '#C9A96E',
   },
   {
-    id: 2,
-    range: [0.36, 0.54],
-    num: '03',
-    label: 'EMBROIDERY',
+    id: 2, range: [0.36, 0.54], num: '03', label: 'EMBROIDERY',
     heading: 'Texture you can feel.',
     body: 'Thread by thread, your design is stitched with precision. Embroidery adds dimension and a luxury finish that lasts a lifetime.',
     chips: ['Up to 10cm design', '3D Puff available', 'From K150/unit'],
-    color: '#FAFAFA',
-    side: 'left',
-    lightIntensity: 1.1,
-    decalColor: '#A78BFA',
+    color: '#2A2520', side: 'left', lightIntensity: 1.2, decalColor: '#A07840',
   },
   {
-    id: 3,
-    range: [0.54, 0.72],
-    num: '04',
-    label: 'DTG PRINTING',
+    id: 3, range: [0.54, 0.72], num: '04', label: 'DTG PRINTING',
     heading: 'Photo-perfect detail.',
     body: 'Direct-to-garment printing reproduces full-colour images, gradients, and fine details with stunning accuracy.',
     chips: ['No minimums', 'Full colour', 'From K120/unit'],
-    color: '#F0EEF8',
-    side: 'right',
-    lightIntensity: 1.3,
-    decalColor: '#6366F1',
+    color: '#1A1A1A', side: 'right', lightIntensity: 1.3, decalColor: '#C9A96E',
   },
   {
-    id: 4,
-    range: [0.72, 1.0],
-    num: '05',
-    label: 'YOUR CREATION',
+    id: 4, range: [0.72, 1.0], num: '05', label: 'YOUR CREATION',
     heading: 'All of it. None of it. You decide.',
     body: 'Mix methods. Stack techniques. Every CUSTO order is handcrafted in Lusaka and delivered across Zambia.',
-    color: '#FFFFFF',
-    side: 'center',
-    lightIntensity: 0.8,
+    color: '#0C0C0A', side: 'center', lightIntensity: 1.0,
   },
 ];
 
-function getPhase(progress) {
+function getPhase(p) {
   for (let i = phases.length - 1; i >= 0; i--) {
-    if (progress >= phases[i].range[0]) return i;
+    if (p >= phases[i].range[0]) return i;
   }
   return 0;
 }
 
-function getPhaseProgress(progress, phaseIndex) {
-  const p = phases[phaseIndex];
-  const range = p.range[1] - p.range[0];
-  return Math.max(0, Math.min(1, (progress - p.range[0]) / range));
+function createShirtGeometry() {
+  const shape = new THREE.Shape();
+  shape.moveTo(-0.64, -1.02);
+  shape.lineTo(0.64, -1.02);
+  shape.bezierCurveTo(0.66, -0.4, 0.67, 0.1, 0.64, 0.3);
+  shape.lineTo(0.92, 0.40);
+  shape.bezierCurveTo(1.14, 0.48, 1.30, 0.40, 1.34, 0.24);
+  shape.bezierCurveTo(1.32, 0.10, 1.20, 0.02, 1.06, 0.04);
+  shape.bezierCurveTo(0.94, 0.06, 0.82, 0.13, 0.75, 0.26);
+  shape.lineTo(0.75, 0.52);
+  shape.bezierCurveTo(0.73, 0.70, 0.44, 0.85, 0.0, 0.87);
+  shape.bezierCurveTo(-0.44, 0.85, -0.73, 0.70, -0.75, 0.52);
+  shape.lineTo(-0.75, 0.26);
+  shape.bezierCurveTo(-0.82, 0.13, -0.94, 0.06, -1.06, 0.04);
+  shape.bezierCurveTo(-1.20, 0.02, -1.32, 0.10, -1.34, 0.24);
+  shape.bezierCurveTo(-1.30, 0.40, -1.14, 0.48, -0.92, 0.40);
+  shape.lineTo(-0.64, 0.3);
+  shape.bezierCurveTo(-0.67, 0.1, -0.66, -0.4, -0.64, -1.02);
+
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    steps: 1, depth: 0.09,
+    bevelEnabled: true, bevelThickness: 0.022, bevelSize: 0.014, bevelSegments: 4,
+  });
+  geo.computeBoundingBox();
+  const c = new THREE.Vector3();
+  geo.boundingBox.getCenter(c);
+  geo.translate(-c.x, -c.y, -c.z);
+  return geo;
 }
 
-// 3D shirt for scroll showcase
 function ShowcaseShirt({ progress }) {
-  const groupRef = useRef();
-  const bodyRef = useRef();
-  const lSleeveRef = useRef();
-  const rSleeveRef = useRef();
-  const collarRef = useRef();
-  const decalRef = useRef();
-  const blueLight = useRef();
-  const lilacLight = useRef();
-
+  const meshRef      = useRef();
+  const matRef       = useRef();
+  const decalRef     = useRef();
+  const warmLightRef = useRef();
+  const coolLightRef = useRef();
+  const geometry = useMemo(() => createShirtGeometry(), []);
   const phaseIndex = getPhase(progress);
   const phase = phases[phaseIndex];
-  const pp = getPhaseProgress(progress, phaseIndex);
 
   useFrame(() => {
-    if (!groupRef.current) return;
-
-    // Rotation
-    if (phaseIndex < 4) {
-      groupRef.current.rotation.y += 0.005;
-    } else {
-      // Phase 4: dramatic 360
-      groupRef.current.rotation.y += 0.015;
-    }
-
-    // Colour transition
-    const targetColor = new THREE.Color(phase.color);
-    if (bodyRef.current?.material) {
-      bodyRef.current.material.color.lerp(targetColor, 0.03);
-      if (lSleeveRef.current?.material) lSleeveRef.current.material.color.lerp(targetColor, 0.03);
-      if (rSleeveRef.current?.material) rSleeveRef.current.material.color.lerp(targetColor, 0.03);
-      if (collarRef.current?.material) collarRef.current.material.color.lerp(targetColor, 0.03);
-    }
-
-    // Light intensity
-    if (blueLight.current) blueLight.current.intensity = THREE.MathUtils.lerp(blueLight.current.intensity, phase.lightIntensity * 1.5, 0.05);
-    if (lilacLight.current) lilacLight.current.intensity = THREE.MathUtils.lerp(lilacLight.current.intensity, phase.lightIntensity, 0.05);
-
-    // Decal visibility
+    if (!meshRef.current) return;
+    meshRef.current.rotation.y += phaseIndex === 4 ? 0.016 : 0.005;
+    if (matRef.current) matRef.current.color.lerp(new THREE.Color(phase.color), 0.04);
+    if (warmLightRef.current)
+      warmLightRef.current.intensity = THREE.MathUtils.lerp(warmLightRef.current.intensity, phase.lightIntensity * 1.4, 0.05);
+    if (coolLightRef.current)
+      coolLightRef.current.intensity = THREE.MathUtils.lerp(coolLightRef.current.intensity, phase.lightIntensity * 0.7, 0.05);
     if (decalRef.current) {
-      const showDecal = phaseIndex >= 1 && phaseIndex <= 3;
-      const targetOpacity = showDecal ? 0.9 : 0;
-      decalRef.current.material.opacity = THREE.MathUtils.lerp(
-        decalRef.current.material.opacity, targetOpacity, 0.04
-      );
-      if (phase.decalColor) {
-        decalRef.current.material.color.lerp(new THREE.Color(phase.decalColor), 0.05);
-      }
+      const show = phaseIndex >= 1 && phaseIndex <= 3;
+      decalRef.current.material.opacity = THREE.MathUtils.lerp(decalRef.current.material.opacity, show ? 0.85 : 0, 0.04);
+      if (phase.decalColor) decalRef.current.material.color.lerp(new THREE.Color(phase.decalColor), 0.06);
     }
   });
 
-  const baseMat = new THREE.MeshStandardMaterial({ color: '#FFFFFF', roughness: 0.88, metalness: 0.02 });
-
   return (
-    <group ref={groupRef} scale={[1.4, 1.4, 1.4]} position={[0, -0.3, 0]}>
-      <pointLight ref={blueLight} position={[-3, 3, 2]} intensity={1.5} color="#3B82F6" />
-      <pointLight ref={lilacLight} position={[3, -2, 2]} intensity={1.0} color="#A78BFA" />
+    <group scale={[1.4, 1.4, 1.4]} position={[0, -0.1, 0]}>
+      <pointLight ref={warmLightRef} position={[-3, 3.5, 2]} intensity={1.5} color="#F5EDD6" />
+      <pointLight ref={coolLightRef} position={[3, -2, 2]}   intensity={0.8} color="#FFFFFF" />
 
-      {/* Body */}
-      <mesh ref={bodyRef} material={baseMat.clone()} castShadow receiveShadow>
-        <boxGeometry args={[1.6, 2.1, 0.18, 8, 12, 4]} />
+      <mesh ref={meshRef} geometry={geometry} castShadow receiveShadow>
+        <meshStandardMaterial ref={matRef} color="#1A1A1A" roughness={0.82} metalness={0.04} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* Left sleeve */}
-      <mesh ref={lSleeveRef} material={baseMat.clone()} position={[-1.05, 0.58, 0]} rotation={[0, 0, -Math.PI / 6]} castShadow>
-        <cylinderGeometry args={[0.28, 0.33, 0.92, 12]} />
+      <mesh ref={decalRef} position={[0, 0.08, 0.12]}>
+        <planeGeometry args={[0.72, 0.62]} />
+        <meshStandardMaterial color="#C9A96E" transparent opacity={0} roughness={0.4} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* Right sleeve */}
-      <mesh ref={rSleeveRef} material={baseMat.clone()} position={[1.05, 0.58, 0]} rotation={[0, 0, Math.PI / 6]} castShadow>
-        <cylinderGeometry args={[0.28, 0.33, 0.92, 12]} />
+      {/* CUSTO label — phase 4 */}
+      <mesh position={[0, 0.08, 0.13]}>
+        <planeGeometry args={[0.28, 0.10]} />
+        <meshStandardMaterial color="#C9A96E" transparent opacity={phaseIndex === 4 ? 0.8 : 0} roughness={0.35} />
       </mesh>
 
-      {/* Collar */}
-      <mesh ref={collarRef} material={baseMat.clone()} position={[0, 1.1, 0]} castShadow>
-        <torusGeometry args={[0.3, 0.08, 8, 24]} />
-      </mesh>
-
-      {/* Decal plane on chest */}
-      <mesh ref={decalRef} position={[0, 0.15, 0.1]}>
-        <planeGeometry args={[0.8, 0.7]} />
-        <meshStandardMaterial
-          color="#3B82F6"
-          transparent
-          opacity={0}
-          roughness={0.5}
-        />
-      </mesh>
-
-      {/* Logo tag (phase 4) */}
-      <mesh position={[0, 0.1, 0.1]}>
-        <planeGeometry args={[0.3, 0.12]} />
-        <meshStandardMaterial
-          color="#A78BFA"
-          transparent
-          opacity={phaseIndex === 4 ? 0.8 : 0}
-          roughness={0.4}
-        />
-      </mesh>
-
-      {/* Shadow catcher */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.2, 0]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.1, 0]} receiveShadow>
         <planeGeometry args={[6, 6]} />
-        <shadowMaterial opacity={0.25} />
+        <shadowMaterial opacity={0.08} />
       </mesh>
     </group>
   );
@@ -195,21 +135,26 @@ function ShowcaseShirt({ progress }) {
 
 function SceneParticles({ active }) {
   const ref = useRef();
-  const positions = new Float32Array(200 * 3);
-  for (let i = 0; i < 200; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 8;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 8;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 6;
-  }
+  const positions = useMemo(() => {
+    const pos = new Float32Array(160 * 3);
+    for (let i = 0; i < 160; i++) {
+      pos[i * 3]     = (Math.random() - 0.5) * 8;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 8;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 6;
+    }
+    return pos;
+  }, []);
+
   useFrame((_, dt) => {
-    if (ref.current) ref.current.rotation.y += dt * 0.04;
+    if (ref.current) ref.current.rotation.y += dt * 0.03;
   });
+
   return (
     <points ref={ref}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial size={0.022} color="#A78BFA" transparent opacity={active ? 0.7 : 0.2} sizeAttenuation />
+      <pointsMaterial size={0.018} color="#C9A96E" transparent opacity={active ? 0.55 : 0.1} sizeAttenuation />
     </points>
   );
 }
@@ -217,59 +162,84 @@ function SceneParticles({ active }) {
 function ShowcaseScene({ progress }) {
   return (
     <>
-      <ambientLight intensity={0.5} color="#C4B5FD" />
-      <directionalLight position={[0, 8, 4]} intensity={1.2} color="#EEF2FF" castShadow />
+      <ambientLight intensity={1.2} color="#FAFAF7" />
+      <directionalLight position={[0, 8, 4]} intensity={1.0} color="#F5EDD6" castShadow />
       <SceneParticles active={getPhase(progress) === 4} />
       <ShowcaseShirt progress={progress} />
     </>
   );
 }
 
-function PhasePanel({ phase, visible, pp }) {
+function PhasePanel({ phase, visible }) {
   const isCenter = phase.side === 'center';
-  const isRight = phase.side === 'right';
+  const isRight  = phase.side === 'right';
 
   return (
     <div
       className="absolute transition-all duration-700"
       style={{
-        top: isCenter ? 'auto' : '50%',
-        bottom: isCenter ? '8%' : 'auto',
-        left: isCenter ? '50%' : isRight ? 'auto' : '5%',
-        right: isCenter ? 'auto' : isRight ? '5%' : 'auto',
+        top:    isCenter ? 'auto' : '50%',
+        bottom: isCenter ? '7%'   : 'auto',
+        left:   isCenter ? '50%'  : isRight ? 'auto' : '4%',
+        right:  isCenter ? 'auto' : isRight ? '4%'   : 'auto',
         transform: isCenter
           ? 'translateX(-50%)'
-          : `translateY(-50%) translateX(${visible ? '0px' : isRight ? '60px' : '-60px'})`,
+          : `translateY(-50%) translateX(${visible ? '0px' : isRight ? '48px' : '-48px'})`,
         opacity: visible ? 1 : 0,
         pointerEvents: visible ? 'auto' : 'none',
-        maxWidth: isCenter ? '700px' : '420px',
-        width: isCenter ? '90%' : '36%',
+        maxWidth: isCenter ? '600px' : '360px',
+        width:    isCenter ? '88%'   : '30%',
         textAlign: isCenter ? 'center' : 'left',
-        zIndex: 10,
+        zIndex: 20,
+        ...(isCenter ? {
+          background: 'rgba(250,250,247,0.88)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: '20px',
+          padding: '32px 36px',
+          border: '1px solid rgba(229,224,213,0.8)',
+        } : {
+          background: 'rgba(250,250,247,0.82)',
+          backdropFilter: 'blur(12px)',
+          borderRadius: '16px',
+          padding: '28px 32px',
+          border: '1px solid rgba(229,224,213,0.7)',
+        }),
       }}
     >
       <p
-        className="font-mono text-xs tracking-[0.2em] mb-3"
-        style={{ color: '#A78BFA', fontFamily: 'JetBrains Mono, monospace' }}
+        style={{
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: '9.5px',
+          letterSpacing: '0.22em',
+          color: '#C9A96E',
+          textTransform: 'uppercase',
+          marginBottom: '12px',
+        }}
       >
         {phase.num} / {phase.label}
       </p>
+
       <h2
-        className="font-display font-bold mb-4 leading-tight"
         style={{
           fontFamily: 'Syne, sans-serif',
-          fontSize: isCenter ? 'clamp(36px, 4vw, 60px)' : 'clamp(28px, 3.5vw, 52px)',
-          color: '#EEF2FF',
+          fontWeight: 800,
+          fontSize: isCenter ? 'clamp(28px, 3.5vw, 48px)' : 'clamp(22px, 2.8vw, 38px)',
+          color: '#0C0C0A',
+          lineHeight: 1.0,
+          letterSpacing: '-0.02em',
+          marginBottom: '14px',
         }}
       >
         {phase.heading}
       </h2>
+
       <p
-        className="leading-relaxed mb-5"
         style={{
-          color: 'rgba(238,242,255,0.65)',
           fontFamily: 'Plus Jakarta Sans, sans-serif',
-          fontSize: '15px',
+          fontSize: '13.5px',
+          lineHeight: 1.7,
+          color: 'rgba(12,12,10,0.55)',
+          marginBottom: '16px',
         }}
       >
         {phase.body}
@@ -280,12 +250,15 @@ function PhasePanel({ phase, visible, pp }) {
           {phase.chips.map(chip => (
             <span
               key={chip}
-              className="text-xs font-semibold px-3 py-1.5 rounded-full"
               style={{
-                background: 'rgba(99,102,241,0.15)',
-                border: '1px solid rgba(99,102,241,0.3)',
-                color: '#C4B5FD',
                 fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '10px',
+                letterSpacing: '0.06em',
+                padding: '5px 12px',
+                borderRadius: '50px',
+                background: '#F2EFE8',
+                border: '1px solid #E5E0D5',
+                color: '#A07840',
               }}
             >
               {chip}
@@ -295,14 +268,27 @@ function PhasePanel({ phase, visible, pp }) {
       )}
 
       {phase.id === 4 && (
-        <div className="mt-8 flex justify-center">
-          <a
-            href="/studio"
-            className="btn-primary text-lg px-10 py-4"
-            style={{ animation: 'pulse-glow 2s ease-in-out infinite' }}
+        <div className="mt-7 flex justify-center">
+          <Link
+            to="/studio"
+            style={{
+              background: '#0C0C0A',
+              color: '#FAFAF7',
+              border: '1.5px solid #0C0C0A',
+              borderRadius: '50px',
+              padding: '13px 32px',
+              fontFamily: 'Plus Jakarta Sans, sans-serif',
+              fontWeight: 700,
+              fontSize: '14px',
+              letterSpacing: '0.04em',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
           >
             START DESIGNING NOW →
-          </a>
+          </Link>
         </div>
       )}
     </div>
@@ -331,12 +317,16 @@ export default function ScrollShowcase() {
   const currentPhase = getPhase(progress);
 
   return (
-    <div ref={wrapperRef} className="relative w-full overflow-hidden" style={{ height: '100vh', background: '#080B14' }}>
+    <div
+      ref={wrapperRef}
+      className="relative w-full overflow-hidden"
+      style={{ height: '100vh', background: '#FAFAF7' }}
+    >
       {/* 3D Canvas */}
       <div className="absolute inset-0">
         <Canvas
           shadows
-          camera={{ position: [0, 0, 5.5], fov: 42 }}
+          camera={{ position: [0, 0, 5.2], fov: 44 }}
           gl={{ alpha: true, antialias: true }}
           style={{ background: 'transparent' }}
         >
@@ -346,37 +336,30 @@ export default function ScrollShowcase() {
         </Canvas>
       </div>
 
-      {/* Gradient overlays for panels */}
+      {/* Side vignettes — very subtle on light bg */}
       <div
-        className="absolute inset-y-0 left-0 w-1/3 pointer-events-none"
-        style={{ background: 'linear-gradient(to right, rgba(8,11,20,0.92), transparent)' }}
+        className="absolute inset-y-0 left-0 w-1/4 pointer-events-none"
+        style={{ background: 'linear-gradient(to right, rgba(250,250,247,0.92), transparent)' }}
       />
       <div
-        className="absolute inset-y-0 right-0 w-1/3 pointer-events-none"
-        style={{ background: 'linear-gradient(to left, rgba(8,11,20,0.92), transparent)' }}
+        className="absolute inset-y-0 right-0 w-1/4 pointer-events-none"
+        style={{ background: 'linear-gradient(to left, rgba(250,250,247,0.92), transparent)' }}
       />
 
       {/* Phase panels */}
       {phases.map((phase, i) => (
-        <PhasePanel
-          key={phase.id}
-          phase={phase}
-          visible={currentPhase === i}
-          pp={getPhaseProgress(progress, i)}
-        />
+        <PhasePanel key={phase.id} phase={phase} visible={currentPhase === i} />
       ))}
 
-      {/* Progress bar */}
+      {/* Progress dots */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
         {phases.map((_, i) => (
           <div
             key={i}
-            className="h-[3px] rounded-full transition-all duration-500"
+            className="h-[2px] rounded-full transition-all duration-500"
             style={{
-              width: currentPhase === i ? '32px' : '12px',
-              background: currentPhase === i
-                ? 'linear-gradient(90deg, #3B82F6, #A78BFA)'
-                : 'rgba(255,255,255,0.2)',
+              width: currentPhase === i ? '28px' : '8px',
+              background: currentPhase === i ? '#C9A96E' : 'rgba(12,12,10,0.15)',
             }}
           />
         ))}

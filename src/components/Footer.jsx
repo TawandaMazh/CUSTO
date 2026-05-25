@@ -32,52 +32,66 @@ const columns = [
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden" style={{ background: '#06080F' }}>
-      {/* Top gradient bar */}
+    <footer style={{ background: '#0C0C0A' }}>
       <div
-        className="h-[2px] w-full"
-        style={{ background: 'linear-gradient(90deg, #3B82F6, #6366F1, #A78BFA)' }}
+        className="h-[1px] w-full"
+        style={{ background: 'linear-gradient(90deg, transparent, #C9A96E, transparent)' }}
       />
 
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-12 mb-16">
-          {/* Brand col */}
+          {/* Brand */}
           <div className="col-span-2">
             <Link to="/" className="inline-block mb-4 no-underline">
               <span
-                className="font-display font-extrabold text-3xl gradient-text"
-                style={{ fontFamily: 'Syne, sans-serif' }}
+                style={{
+                  fontFamily: 'Syne, sans-serif',
+                  fontWeight: 800,
+                  fontSize: '28px',
+                  color: '#FAFAF7',
+                  letterSpacing: '-0.03em',
+                }}
               >
                 CUSTO
               </span>
             </Link>
             <p
-              className="text-sm mb-6 max-w-xs leading-relaxed"
-              style={{ color: 'rgba(238,242,255,0.45)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+              style={{
+                fontFamily: 'Plus Jakarta Sans, sans-serif',
+                fontSize: '13px',
+                lineHeight: 1.7,
+                color: 'rgba(250,250,247,0.35)',
+                maxWidth: '220px',
+                marginBottom: '24px',
+              }}
             >
               Wear Your Vision. Premium custom apparel crafted in Lusaka and delivered across Zambia.
             </p>
 
-            {/* Social */}
-            <div className="flex gap-4 mb-8">
+            {/* Social links */}
+            <div className="flex gap-3 mb-8">
               {[
                 { label: 'Instagram', href: '#', icon: '📸' },
                 { label: 'TikTok', href: '#', icon: '🎵' },
-                {
-                  label: 'WhatsApp',
-                  href: 'https://wa.me/260970000000',
-                  icon: '💬',
-                },
+                { label: 'WhatsApp', href: 'https://wa.me/260970000000', icon: '💬' },
               ].map(s => (
                 <a
                   key={s.label}
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-lg no-underline transition-all duration-300 hover:scale-110"
+                  className="no-underline"
                   style={{
-                    background: 'rgba(99,102,241,0.12)',
-                    border: '1px solid rgba(99,102,241,0.2)',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '15px',
+                    background: 'rgba(250,250,247,0.06)',
+                    border: '1px solid rgba(250,250,247,0.1)',
+                    transition: 'all 0.2s',
                   }}
                   title={s.label}
                 >
@@ -86,17 +100,20 @@ export default function Footer() {
               ))}
             </div>
 
-            {/* Payment icons */}
+            {/* Payment badges */}
             <div className="flex flex-wrap gap-2">
-              {['📱 Airtel', '📲 MTN', '💳 Visa', '💳 MC'].map(p => (
+              {['Airtel', 'MTN', 'Visa', 'Mastercard'].map(p => (
                 <span
                   key={p}
-                  className="text-xs px-2.5 py-1 rounded"
                   style={{
-                    background: 'rgba(99,102,241,0.08)',
-                    color: 'rgba(238,242,255,0.4)',
-                    border: '1px solid rgba(99,102,241,0.15)',
                     fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: '9px',
+                    letterSpacing: '0.08em',
+                    padding: '4px 10px',
+                    borderRadius: '4px',
+                    background: 'rgba(250,250,247,0.05)',
+                    border: '1px solid rgba(250,250,247,0.1)',
+                    color: 'rgba(250,250,247,0.3)',
                   }}
                 >
                   {p}
@@ -109,18 +126,32 @@ export default function Footer() {
           {columns.map(col => (
             <div key={col.title}>
               <h4
-                className="font-display font-bold text-sm mb-5 tracking-wider"
-                style={{ fontFamily: 'Syne, sans-serif', color: '#EEF2FF' }}
+                style={{
+                  fontFamily: 'Syne, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '11px',
+                  letterSpacing: '0.16em',
+                  color: 'rgba(250,250,247,0.35)',
+                  textTransform: 'uppercase',
+                  marginBottom: '18px',
+                }}
               >
-                {col.title.toUpperCase()}
+                {col.title}
               </h4>
-              <ul className="flex flex-col gap-3">
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {col.links.map(link => (
                   <li key={link.label}>
                     <Link
                       to={link.to}
-                      className="text-sm no-underline transition-colors duration-200 hover:text-[#A78BFA]"
-                      style={{ color: 'rgba(238,242,255,0.45)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                      className="no-underline"
+                      style={{
+                        fontFamily: 'Plus Jakarta Sans, sans-serif',
+                        fontSize: '13px',
+                        color: 'rgba(250,250,247,0.45)',
+                        transition: 'color 0.2s',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.color = '#C9A96E'}
+                      onMouseLeave={e => e.currentTarget.style.color = 'rgba(250,250,247,0.45)'}
                     >
                       {link.label}
                     </Link>
@@ -133,12 +164,19 @@ export default function Footer() {
           {/* Contact */}
           <div className="col-span-2 md:col-span-1">
             <h4
-              className="font-display font-bold text-sm mb-5 tracking-wider"
-              style={{ fontFamily: 'Syne, sans-serif', color: '#EEF2FF' }}
+              style={{
+                fontFamily: 'Syne, sans-serif',
+                fontWeight: 700,
+                fontSize: '11px',
+                letterSpacing: '0.16em',
+                color: 'rgba(250,250,247,0.35)',
+                textTransform: 'uppercase',
+                marginBottom: '18px',
+              }}
             >
-              CONTACT
+              Contact
             </h4>
-            <div className="flex flex-col gap-3">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[
                 { icon: '📍', text: 'Lusaka, Zambia' },
                 { icon: '📧', text: 'hello@custo.co.zm' },
@@ -146,8 +184,14 @@ export default function Footer() {
               ].map(c => (
                 <p
                   key={c.text}
-                  className="text-sm flex items-start gap-2"
-                  style={{ color: 'rgba(238,242,255,0.45)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                  style={{
+                    fontFamily: 'Plus Jakarta Sans, sans-serif',
+                    fontSize: '13px',
+                    color: 'rgba(250,250,247,0.4)',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '8px',
+                  }}
                 >
                   <span>{c.icon}</span>
                   <span>{c.text}</span>
@@ -157,11 +201,21 @@ export default function Footer() {
                 href="https://wa.me/260970000000?text=Hi%20CUSTO!"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-2 text-sm font-semibold no-underline py-2.5 px-4 rounded-full transition-all hover:opacity-80"
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginTop: '8px',
+                  padding: '9px 18px',
+                  borderRadius: '50px',
                   background: '#25D366',
-                  color: 'white',
+                  color: '#FFFFFF',
                   fontFamily: 'Plus Jakarta Sans, sans-serif',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  textDecoration: 'none',
+                  width: 'fit-content',
+                  transition: 'opacity 0.2s',
                 }}
               >
                 💬 WhatsApp Us
@@ -173,17 +227,25 @@ export default function Footer() {
         {/* Bottom */}
         <div
           className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4"
-          style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}
+          style={{ borderTop: '1px solid rgba(250,250,247,0.07)' }}
         >
           <p
-            className="text-xs"
-            style={{ color: 'rgba(238,242,255,0.3)', fontFamily: 'JetBrains Mono, monospace' }}
+            style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '10px',
+              color: 'rgba(250,250,247,0.2)',
+              letterSpacing: '0.06em',
+            }}
           >
             © 2025 CUSTO Zambia. All rights reserved.
           </p>
           <p
-            className="text-xs"
-            style={{ color: 'rgba(238,242,255,0.2)', fontFamily: 'JetBrains Mono, monospace' }}
+            style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '10px',
+              color: 'rgba(250,250,247,0.15)',
+              letterSpacing: '0.06em',
+            }}
           >
             🇿🇲 Made with pride in Lusaka
           </p>

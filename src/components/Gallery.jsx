@@ -12,95 +12,116 @@ const items = [
   { id: 8, url: 'https://images.unsplash.com/photo-1516826957135-700dedea698c?w=600&q=80', label: 'Branded Apparel', city: 'Lusaka' },
 ];
 
-const heights = ['h-64', 'h-48', 'h-72', 'h-56', 'h-64', 'h-48', 'h-72', 'h-56'];
-
 export default function Gallery() {
   const ref = useRef();
-  const inView = useInView(ref, { once: true, margin: '-100px' });
+  const inView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section
-      ref={ref}
-      className="py-32 px-6"
-      style={{ background: 'linear-gradient(180deg, #0A0D1A 0%, #080B14 100%)' }}
-    >
+    <section ref={ref} className="py-32 px-6" style={{ background: '#FAFAF7' }}>
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-          className="mb-16"
+          transition={{ duration: 0.6 }}
+          className="mb-16 flex items-end justify-between flex-wrap gap-6"
         >
-          <h2
-            className="font-display font-black"
-            style={{
-              fontFamily: 'Syne, sans-serif',
-              fontSize: 'clamp(48px, 7vw, 110px)',
-              color: '#EEF2FF',
-              lineHeight: 0.9,
-              letterSpacing: '-0.02em',
-            }}
-          >
-            WORN ACROSS<br />
-            <span className="gradient-text">ZAMBIA</span>
-          </h2>
-          <p
-            className="mt-4 max-w-md"
-            style={{ color: 'rgba(238,242,255,0.5)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
-          >
-            From Lusaka to Livingstone — custom gear delivered nationwide.
-          </p>
+          <div>
+            <h2
+              style={{
+                fontFamily: 'Syne, sans-serif',
+                fontWeight: 800,
+                fontSize: 'clamp(48px, 7vw, 110px)',
+                color: '#0C0C0A',
+                lineHeight: 0.88,
+                letterSpacing: '-0.035em',
+              }}
+            >
+              WORN ACROSS<br />
+              <span className="gradient-text">ZAMBIA</span>
+            </h2>
+            <p
+              style={{
+                fontFamily: 'Plus Jakarta Sans, sans-serif',
+                fontSize: '14px',
+                color: 'rgba(12,12,10,0.45)',
+                marginTop: '16px',
+              }}
+            >
+              From Lusaka to Livingstone — custom gear delivered nationwide.
+            </p>
+          </div>
         </motion.div>
 
         {/* Masonry grid */}
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+        <div className="columns-2 md:columns-3 lg:columns-4 gap-3" style={{ columnGap: '12px' }}>
           {items.map((item, i) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: i * 0.08 }}
-              className="relative group overflow-hidden rounded-2xl break-inside-avoid cursor-pointer"
-              style={{ marginBottom: '16px' }}
+              transition={{ delay: i * 0.07 }}
+              className="relative group overflow-hidden break-inside-avoid cursor-pointer"
+              style={{
+                borderRadius: '12px',
+                marginBottom: '12px',
+                border: '1px solid #E5E0D5',
+              }}
             >
               <img
                 src={item.url}
                 alt={item.label}
-                className="w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                style={{ height: i % 3 === 0 ? '280px' : i % 3 === 1 ? '220px' : '260px' }}
+                className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                style={{ height: i % 3 === 0 ? '280px' : i % 3 === 1 ? '220px' : '260px', display: 'block' }}
                 loading="lazy"
               />
 
               {/* Overlay */}
               <div
-                className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-400"
-                style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.75), rgba(167,139,250,0.75))' }}
+                className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-350"
+                style={{ background: 'rgba(12,12,10,0.72)' }}
               >
                 <span
-                  className="font-mono text-white text-sm tracking-widest font-bold"
-                  style={{ fontFamily: 'JetBrains Mono, monospace' }}
-                >
-                  VIEW
-                </span>
-                <span
-                  className="text-white text-xs mt-2 opacity-80"
-                  style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                  style={{
+                    fontFamily: 'Syne, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    letterSpacing: '0.1em',
+                    color: '#FAFAF7',
+                  }}
                 >
                   {item.label}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: '10px',
+                    color: '#C9A96E',
+                    marginTop: '6px',
+                    letterSpacing: '0.16em',
+                  }}
+                >
+                  🇿🇲 {item.city}
                 </span>
               </div>
 
               {/* City tag */}
               <div
-                className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold"
                 style={{
-                  background: 'rgba(8,11,20,0.7)',
-                  color: '#C4B5FD',
-                  fontFamily: 'JetBrains Mono, monospace',
+                  position: 'absolute',
+                  top: '10px',
+                  left: '10px',
+                  padding: '4px 10px',
+                  borderRadius: '50px',
+                  background: 'rgba(250,250,247,0.88)',
                   backdropFilter: 'blur(8px)',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '9px',
+                  letterSpacing: '0.1em',
+                  color: 'rgba(12,12,10,0.55)',
                 }}
               >
-                🇿🇲 {item.city}
+                {item.city}
               </div>
             </motion.div>
           ))}
