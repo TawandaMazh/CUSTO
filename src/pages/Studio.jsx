@@ -21,8 +21,8 @@ export default function Studio() {
   // Canvas actions passed down to ToolPanel
   const addText = useCallback((text, options) => {
     if (!fabricRef.current) return;
-    import('fabric').then(({ fabric }) => {
-      const t = new fabric.IText(text, {
+    import('fabric').then(({ IText }) => {
+      const t = new IText(text, {
         left: 80,
         top: 100,
         fontFamily: options.fontFamily ?? 'Syne',
@@ -42,23 +42,26 @@ export default function Studio() {
 
   const addImage = useCallback((src) => {
     if (!fabricRef.current) return;
-    import('fabric').then(({ fabric }) => {
-      fabric.Image.fromURL(src, (img) => {
+    import('fabric').then(({ Image: FabricImage }) => {
+      FabricImage.fromURL(src, { crossOrigin: 'anonymous' }).then((img) => {
         const maxSize = 200;
         const scale = Math.min(maxSize / img.width, maxSize / img.height);
         img.set({ left: 60, top: 80, scaleX: scale, scaleY: scale });
         fabricRef.current.add(img);
         fabricRef.current.setActiveObject(img);
         fabricRef.current.renderAll();
-      }, { crossOrigin: 'anonymous' });
+      });
     });
   }, []);
 
   const addShape = useCallback((svgStr) => {
     if (!fabricRef.current) return;
-    import('fabric').then(({ fabric }) => {
-      fabric.loadSVGFromString(svgStr, (objects, options) => {
-        const group = fabric.util.groupSVGElements(objects, options);
+    import('fabric').then(({ loadSVGFromString, Group, util }) => {
+      loadSVGFromString(svgStr).then((result) => {
+        const objects = Array.isArray(result) ? result : (result.objects ?? []);
+        const group = util.groupSVGElements
+          ? util.groupSVGElements(objects, Array.isArray(result) ? {} : (result.options ?? {}))
+          : new Group(objects);
         group.set({ left: 80, top: 100, scaleX: 0.8, scaleY: 0.8 });
         fabricRef.current.add(group);
         fabricRef.current.setActiveObject(group);

@@ -29,13 +29,13 @@ const DesignCanvas = forwardRef(function DesignCanvas(
     initialized.current = true;
 
     let fc;
-    import('fabric').then(({ fabric }) => {
+    import('fabric').then(({ Canvas }) => {
       if (!canvasRef.current) return;
 
       const W = canvasRef.current.parentElement?.offsetWidth || 500;
       const H = Math.round(W * 1.2);
 
-      fc = new fabric.Canvas(canvasRef.current, {
+      fc = new Canvas(canvasRef.current, {
         width: W,
         height: H,
         backgroundColor: 'transparent',
@@ -76,7 +76,7 @@ const DesignCanvas = forwardRef(function DesignCanvas(
       // Load saved
       const saved = localStorage.getItem('custo_canvas');
       if (saved) {
-        fc.loadFromJSON(JSON.parse(saved), () => fc.renderAll());
+        fc.loadFromJSON(JSON.parse(saved)).then(() => fc.renderAll());
       }
 
       return () => {
